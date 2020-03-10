@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--BitPay Top Menu-->
+        <menuitem id="bitpay_main_menu" name="BitPay" icon="terp-sale" sequence="1"/>
+
+        <!--Main Menus-->
+        <menuitem id="bitpay_configuration_menu" action="action_bitpay_instance" name="Configuration"
+                  parent="bitpay_main_menu" sequence="0"/>
+    </data>
+</openerp>
