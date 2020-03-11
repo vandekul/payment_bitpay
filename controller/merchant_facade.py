@@ -28,6 +28,7 @@ else:
     f.close()
 
 client = Client(API_HOST, False, key)
+pairingCodeURL = ''
 
 
 def fetch_token(self, facade):
@@ -40,18 +41,18 @@ def fetch_token(self, facade):
         # global client
         #client = Client(API_HOST, False, key, {facade: token})
         client.tokens[facade] = token
+        return ''
     else:
         _logger.info("Facade " + facade )
         pairingCode = client.create_token(facade)
-        #_logger.info("Creating " + facade + " token.")
-        _logger.info("Please go to:  %s/dashboard/merchant/api-tokens  then enter \"%s\" then click the \"Find\" button, then click \"Approve\"" % (
-            API_HOST, pairingCode))
-        #input("When you've complete the above, hit enter to continue...")
-        #_logger.info(response.decode(json.detect_encoding(response)))
-        #_logger.info("token s: %s" % client.tokens[facade])
+        
+        pairingCodeURL = API_HOST+"/api-access-request?pairingCode="+pairingCode
+        _logger.info("URL PairingCode: %s", pairingCodeURL)
+
         f = open(TOKEN_FILE + facade, 'w')
         f.write(client.tokens[facade])
         f.close()
+        return pairingCodeURL
 
 
 def get_from_bitpay_api(client, uri, token):
@@ -65,6 +66,7 @@ def get_from_bitpay_api(client, uri, token):
     try:
         # pp.pprint(headers)
         # print(uri + payload)
+
         response = requests.get(uri + payload, headers=headers, verify=client.verify)
     except Exception as pro:
         raise BitPayConnectionError(pro.args)
@@ -72,8 +74,6 @@ def get_from_bitpay_api(client, uri, token):
         #_logger.info("get_from_bitpay_api Response DATA: %s", response.json())
         return response.json()['data']
     client.response_error(response)
-
-
 """
 POST to any resource
 Make sure to include the proper token in the params
@@ -88,7 +88,7 @@ def post_to_bitpay_api(client, uri, resource, params):
     headers = {"content-type": "application/json",
                "accept": "application/json", "X-Identity": xidentity,
                "X-Signature": xsignature, "X-accept-version": "2.0.0"}
-    _logger.info("POST_to_bitpay_api uri %s  params %s", client, uri, params)
+    _logger.info("POST_to_bitpay_api uri %s  params %s headers %s", uri, params, headers)
     try:
         
         response = requests.post(uri, data=payload, headers=headers, verify=client.verify)

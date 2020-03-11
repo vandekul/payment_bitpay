@@ -44,8 +44,8 @@ class BitpayController(http.Controller):
             tx_ids = request.registry['payment.transaction'].search(cr, uid, [('reference', '=', self.invoice['orderId'])], context=context)
             if tx_ids:
                 tx = request.registry['payment.transaction'].browse(cr, uid, tx_ids[0], context=context)
-
-        tx.bitpay_status = self.invoice['status']
+                tx.bitpay_status = self.invoice['status']
+        
         if self.invoice['status'] in ['confirmed']:
             tx.state = 'done'
             tx.sale_order_id.state = 'sale'
@@ -71,27 +71,30 @@ class BitpayController(http.Controller):
         base_url = request.env['ir.config_parameter'].get_param('web.base.url')
         return_url = base_url + self._notify_url
        
-        merchant_facade.fetch_token(self, acquirer.token)
+        resp = merchant_facade.fetch_token(self, acquirer.token)
         token = merchant_facade.client.tokens[acquirer.token]
-        acquirer.invoice = merchant_facade.client.create_invoice(
-            {"price": post.get('amount'),
-            "currency": currency,
-            'orderId': post.get('reference'),
-            "token": token,
-            "redirectURL": acquirer.confirmationURL,
-            "notificationURL": return_url,
-            "notificationEmail": acquirer.notificationEmail,
-            "extendedNotifications": True,
-            "buyer": {  "email": post.get('partner_email'),
-                        "name": post.get('partner_name'),
-                        "address1": post.get('street1'),
-                        "address2": post.get('street2'),
-                        "locality": post.get('billing_partner_city'),
-                        "postalCode": post.get('billing_partner_zip'),
-                        "country": post.get('billing_partner_country_id'),
-                        "notify": False}})
-        invoiceId = dict(acquirer.invoice)['id']
-        self.invoice = merchant_facade.get_from_bitpay_api(merchant_facade.client, merchant_facade.client.uri + "/invoices/" + invoiceId,token)
+        if resp == '':
+            acquirer.invoice = merchant_facade.client.create_invoice(
+                {"price": post.get('amount'),
+                "currency": currency,
+                "orderId": post.get('reference'),
+                "token": token,
+                "redirectURL": acquirer.confirmationURL,
+                "notificationURL": return_url,
+                "notificationEmail": acquirer.notificationEmail,
+                "extendedNotifications": True,
+                "buyer": {  "email": post.get('partner_email'),
+                            "name": post.get('partner_name'),
+                            "address1": post.get('street1'),
+                            "address2": post.get('street2'),
+                            "locality": post.get('billing_partner_city'),
+                            "postalCode": post.get('billing_partner_zip'),
+                            "country": post.get('billing_partner_country_id'),
+                            "notify": False}})
+            invoiceId = dict(acquirer.invoice)['id']
+            self.invoice = merchant_facade.get_from_bitpay_api(merchant_facade.client, merchant_facade.client.uri + "/invoices/" + invoiceId,token)
 
-        #_logger.info("SELF INVOICE %s", pprint.pformat(self.invoice))
-        return werkzeug.utils.redirect(self.invoice['url'])
+            #_logger.info("SELF INVOICE %s", pprint.pformat(self.invoice))
+            return werkzeug.utils.redirect(self.invoice['url'])
+        else:
+            return werkzeug.utils.redirect(resp)

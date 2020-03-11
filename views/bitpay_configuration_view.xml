@@ -10,7 +10,6 @@
                     <group attrs="{'invisible': [('provider', '!=', 'bitpay')]}">
                        <field name="token"/>
                         <field name="location"/>
-                        <field name="api_email"/>
                         <field name="notificationEmail"/>
                         <field name="confirmationURL"/>
                         <field name="buyerNotification"/>

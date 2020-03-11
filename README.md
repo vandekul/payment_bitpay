@@ -61,5 +61,21 @@ Gateway to Bitpay for Odoo v9.0
         </div>
     </div>
 </section>
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan">Instructions (First time running)</h2>
+        <div class="oe_span6">
+            <p class='oe_mt32'>
+                <ul>
+                    <li>After doing previous steps (Pre-configure your server and Configure Payment Acquirement)</li>
+                    <li>Open a browser and log in to your bitpay account</li>
+                    <li>Make an order and try to pay with Bitpay, it will redirect you in order to <a href="https://bitpay.com/api/#rest-api-getting-access" > approve access</a> to bitpay. You only have to Approve it. This step only works once, otherwise you must configure manually or remove token.priv* file</li>
+                    <li>Log out bitpay account and try to pay again with Bitpay payment method</li>
+                    <li>NOTE: Keep in mind to change API_HOST variable in /controller/merchant_facade.py if you want to check in test enviroment (https://test.bitpay.com) instead of production enviroment (https://bitpay.com)</li>
+                 </ul>
+            </p>
+        </div>
+    </div>
+</section>
 </body>
 </html>

@@ -32,7 +32,6 @@ class AcquirerBitPay(models.Model):
 
     token = fields.Char('Token', help='Token type: merchant/pos/payroll')  #merchant
     location = fields.Char('Location', size=64) 
-    api_email = fields.Char('Bitpay Email', help='Registered email in bitpay location')
     notificationEmail = fields.Char('Notifications Email from Bitpay', help=' Notifications email in your company, if it is empty no notifications will be send')
     confirmationURL = fields.Char('Confirmation URL', help='Confirmation URL to return after Bitpay payment')
     buyerNotification = fields.Boolean('Odoo confirmation mail to buyer', help='If it is checked, Odoo will send the confirmation mail defined')
@@ -41,7 +40,6 @@ class AcquirerBitPay(models.Model):
         'token': 'merchant',
         'location':'https://test.bitpay.com/', #Testnet BitPay
         #'location':'https://testnet.demo.btcpayserver.org/', #Testnet BTCPay
-        'api_email':'susannafm@gmail.com',
         'notificationEmail':'susanna@zynthian.org',
         'confirmationURL':'http://odoo-dev.zynthian.org/shop/confirmation',
         'buyerNotification': 'True',
